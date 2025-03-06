@@ -1,14 +1,23 @@
 #!/bin/bash
 
-# Get battery levels for Magic Mouse and Keyboard
-MOUSE_BATTERY=$(ioreg -c AppleDeviceManagementHIDEventService -r | grep -A5 "Magic Mouse" | grep BatteryPercent | awk '{print $NF}')
-KEYBOARD_BATTERY=$(ioreg -c AppleDeviceManagementHIDEventService -r | grep -A5 "Magic Keyboard" | grep BatteryPercent | awk '{print $NF}')
+# Fetch battery levels for Magic Mouse and Keyboard
+MOUSE_BATTERY=$(ioreg -c AppleDeviceManagementHIDEventService -r | awk '/"Product" = "Magic Mouse"/ {getline; getline; getline; getline; getline; if ($0 ~ /"BatteryPercent"/) print $NF}')
+KEYBOARD_BATTERY=$(ioreg -c AppleDeviceManagementHIDEventService -r | awk '/"Product" = "Magic Keyboard with Numeric Keypad"/ {getline; getline; getline; getline; getline; if ($0 ~ /"BatteryPercent"/) print $NF}')
 
-# Default to "N/A" if not found
-MOUSE_BATTERY=${MOUSE_BATTERY:-"N/A"}
-KEYBOARD_BATTERY=${KEYBOARD_BATTERY:-"N/A"}
+# Ensure battery values are always displayed correctly
+if [[ -z "$MOUSE_BATTERY" ]]; then
+    MOUSE_BATTERY="N/A"
+else
+    MOUSE_BATTERY="${MOUSE_BATTERY}%"
+fi
 
-# Output for SwiftBar (this is what shows in the menu bar)
-echo "🖱️ $MOUSE_BATTERY% | ⌨️ $KEYBOARD_BATTERY%"
+if [[ -z "$KEYBOARD_BATTERY" ]]; then
+    KEYBOARD_BATTERY="N/A"
+else
+    KEYBOARD_BATTERY="${KEYBOARD_BATTERY}%"
+fi
+
+# Output formatted battery status for SwiftBar
+echo "🖱️ M: $MOUSE_BATTERY | ⌨️ K: $KEYBOARD_BATTERY"
 echo "---"
 echo "Refresh | refresh=true"

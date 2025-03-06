@@ -8,5 +8,7 @@
     <string>Macki</string>
     <key>CFBundleExecutable</key>
     <string>macki</string>
+    <key>CFBundleIconFile</key>
+    <string>macki.icns</string>
 </dict>
 </plist>
